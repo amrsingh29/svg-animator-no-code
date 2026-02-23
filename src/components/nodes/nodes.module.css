@@ -153,31 +153,34 @@
 }
 
 .handleRight {
-    right: -4px;
-}
-
-.plusButton {
-    position: absolute;
-    right: -24px;
-    top: 50%;
-    transform: translateY(-50%);
+    right: -10px;
+    width: 20px;
+    height: 20px;
     background-color: var(--bg-main);
     border: 1px solid var(--border-dim);
     color: var(--text-secondary);
     border-radius: 50%;
-    width: 20px;
-    height: 20px;
     display: flex;
     align-items: center;
     justify-content: center;
-    cursor: pointer;
-    font-size: 14px;
     transition: all 0.2s;
-    line-height: 1;
+    z-index: 10;
 }
 
-.plusButton:hover {
+.handleRight::after {
+    content: '+';
+    font-size: 14px;
+    line-height: 1;
+    color: inherit;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.handleRight:hover {
     background-color: var(--accent-orange);
     color: white;
     border-color: var(--accent-orange);
+    transform: scale(1.1);
 }

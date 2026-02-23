@@ -119,10 +119,6 @@ export const AnimatedIcon = () => (
             )}
 
             <Handle type="source" position={Position.Right} className={styles.handleRight} />
-            <button className={styles.plusButton} onClick={(e) => {
-                e.stopPropagation();
-                window.dispatchEvent(new CustomEvent('openAddNodeMenu', { detail: { x: e.clientX, y: e.clientY, sourceNodeId: id } }));
-            }}>+</button>
         </div>
     );
 }
