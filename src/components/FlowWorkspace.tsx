@@ -24,6 +24,7 @@ import PromptNode from "./nodes/PromptNode";
 import AIGenerationNode from "./nodes/AIGenerationNode";
 import ResultNode from "./nodes/ResultNode";
 import Sidebar from "./Sidebar";
+import ContextMenu, { MenuContextType } from "./ContextMenu";
 
 const nodeTypes = {
     svgSource: SVGSourceNode,
@@ -52,6 +53,7 @@ function Flow() {
     const reactFlowWrapper = useRef<HTMLDivElement>(null);
     const [nodes, setNodes] = useState<Node[]>(initialNodes);
     const [edges, setEdges] = useState<Edge[]>(initialEdges);
+    const [menu, setMenu] = useState<MenuContextType | null>(null);
     const { screenToFlowPosition } = useReactFlow();
 
     const onNodesChange = useCallback(
@@ -77,10 +79,7 @@ function Flow() {
     const onDrop = useCallback(
         (event: React.DragEvent) => {
             event.preventDefault();
-
             const type = event.dataTransfer.getData('application/reactflow');
-
-            // check if the dropped element is valid
             if (!type) return;
             const parsed = JSON.parse(type);
 
@@ -101,8 +100,45 @@ function Flow() {
         [screenToFlowPosition]
     );
 
+    const onPaneContextMenu = useCallback(
+        (event: React.MouseEvent | MouseEvent) => {
+            event.preventDefault();
+            setMenu({
+                x: event.clientX,
+                y: event.clientY,
+            });
+        },
+        []
+    );
+
+    const onPaneClick = useCallback(() => {
+        setMenu(null);
+    }, []);
+
+    const onNodeContextMenu = useCallback(
+        (event: React.MouseEvent, node: Node) => {
+            // Instead of pane menu, we can trigger the link node menu
+            // but usually right-click is edit, we will map '+' button for this exactly.
+            // We can provide a global function to nodes via Context or simply listen to custom events
+        },
+        []
+    );
+
+    // We attach a global event listener to handle '+' button clicks from nodes
+    React.useEffect(() => {
+        const handleAddNodeEvent = (e: CustomEvent) => {
+            setMenu({
+                x: e.detail.x,
+                y: e.detail.y,
+                sourceNodeId: e.detail.sourceNodeId,
+            });
+        };
+        window.addEventListener('openAddNodeMenu' as any, handleAddNodeEvent);
+        return () => window.removeEventListener('openAddNodeMenu' as any, handleAddNodeEvent);
+    }, []);
+
     return (
-        <div style={{ display: 'flex', width: "100vw", height: "100vh" }}>
+        <div style={{ display: 'flex', width: "100vw", height: "100vh" }} onClick={onPaneClick}>
             <Sidebar />
             <div style={{ flexGrow: 1 }} ref={reactFlowWrapper}>
                 <ReactFlow
@@ -114,11 +150,13 @@ function Flow() {
                     onConnect={onConnect}
                     onDrop={onDrop}
                     onDragOver={onDragOver}
+                    onPaneContextMenu={onPaneContextMenu}
                     fitView
                 >
                     <Background color="#27272a" variant={BackgroundVariant.Dots} gap={16} size={1} />
                     <Controls />
                 </ReactFlow>
+                {menu && <ContextMenu context={menu} onClose={() => setMenu(null)} getNodeId={getId} />}
             </div>
         </div>
     );
@@ -131,4 +169,5 @@ export default function FlowWorkspace() {
         </ReactFlowProvider>
     );
 }
+
 

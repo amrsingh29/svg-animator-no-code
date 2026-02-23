@@ -3,7 +3,7 @@ import { Handle, Position } from '@xyflow/react';
 import styles from './nodes.module.css';
 import { PlayCircle, Download, Clipboard, Play, Pause, FileCode, Sun, Moon } from 'lucide-react';
 
-export default function ResultNode({ data }: any) {
+export default function ResultNode({ id, data }: any) {
     const svgContent = data.svg || '';
     const [isPaused, setIsPaused] = useState(false);
     const [previewTheme, setPreviewTheme] = useState<'dark' | 'light'>('dark');
@@ -119,6 +119,10 @@ export const AnimatedIcon = () => (
             )}
 
             <Handle type="source" position={Position.Right} className={styles.handleRight} />
+            <button className={styles.plusButton} onClick={(e) => {
+                e.stopPropagation();
+                window.dispatchEvent(new CustomEvent('openAddNodeMenu', { detail: { x: e.clientX, y: e.clientY, sourceNodeId: id } }));
+            }}>+</button>
         </div>
     );
 }

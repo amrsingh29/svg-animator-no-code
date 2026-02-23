@@ -155,3 +155,29 @@
 .handleRight {
     right: -4px;
 }
+
+.plusButton {
+    position: absolute;
+    right: -24px;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: var(--bg-main);
+    border: 1px solid var(--border-dim);
+    color: var(--text-secondary);
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s;
+    line-height: 1;
+}
+
+.plusButton:hover {
+    background-color: var(--accent-orange);
+    color: white;
+    border-color: var(--accent-orange);
+}
