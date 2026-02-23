@@ -130,6 +130,24 @@
     }
 }
 
+.iconButton {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
+    border-radius: 4px;
+    transition: all 0.2s;
+}
+
+.iconButton:hover {
+    background-color: var(--border-dim);
+    color: var(--accent-orange);
+}
+
 .handleLeft {
     left: -4px;
 }

@@ -28,17 +28,29 @@ Do not wrap your response in markdown code blocks. Return ONLY the raw <svg>...<
             ],
             config: {
                 systemInstruction: systemInstruction,
-                temperature: 0.2,
+                temperature: 0.1, // Lower temperature for more stable XML
             }
         });
 
         const animatedSvg = response.text?.trim() || '';
-        const cleanSvg = animatedSvg.replace(/^```(xml|html|svg)?\n?/i, '').replace(/\n?```$/i, '').trim();
+
+        // Advanced cleaning: Strip markdown and handle common hallucinations
+        let cleanSvg = animatedSvg
+            .replace(/^```(xml|html|svg)?\n?/i, '')
+            .replace(/\n?```$/i, '')
+            .trim();
+
+        // Basic validation: Check if it starts with <svg and ends with </svg>
+        if (!cleanSvg.toLowerCase().includes('<svg') || !cleanSvg.toLowerCase().includes('</svg>')) {
+            throw new Error("AI output does not contain a valid SVG tag.");
+        }
 
         return NextResponse.json({ svg: cleanSvg });
 
-    } catch (error) {
+    } catch (error: any) {
         console.error('Error in animate API:', error);
-        return NextResponse.json({ error: 'Failed to generate animated SVG' }, { status: 500 });
+        return NextResponse.json({
+            error: error.message || 'Failed to generate animated SVG'
+        }, { status: 500 });
     }
 }
