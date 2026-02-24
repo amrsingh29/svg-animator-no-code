@@ -34,13 +34,20 @@ export default function AIGenerationNode({ id, data }: any) {
 
         // 3. Call API
         try {
+            const isMorphMode = svgNode.data.isMorphMode || false;
+
+            const payload = {
+                prompt: promptNode.data.prompt,
+                isMorphMode,
+                svg: !isMorphMode ? svgNode.data.svg : undefined,
+                svgBefore: isMorphMode ? svgNode.data.svgBefore : undefined,
+                svgAfter: isMorphMode ? svgNode.data.svgAfter : undefined,
+            };
+
             const response = await fetch('/api/animate', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    svg: svgNode.data.svg,
-                    prompt: promptNode.data.prompt,
-                }),
+                body: JSON.stringify(payload),
             });
 
             const result = await response.json();
