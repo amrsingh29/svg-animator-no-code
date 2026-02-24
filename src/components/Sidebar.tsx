@@ -9,7 +9,8 @@ import {
     Heart,
     MessageSquare,
     Sparkles,
-    PlayCircle
+    PlayCircle,
+    Settings
 } from 'lucide-react';
 
 const templates = [
@@ -23,7 +24,7 @@ const templates = [
     { name: 'Render Result', type: 'result', icon: PlayCircle, svg: '' },
 ];
 
-export default function Sidebar() {
+export default function Sidebar({ onOpenSettings }: { onOpenSettings?: () => void }) {
     const onDragStart = (event: React.DragEvent, template: typeof templates[0]) => {
         event.dataTransfer.setData('application/reactflow', JSON.stringify({
             type: template.type,
@@ -33,24 +34,39 @@ export default function Sidebar() {
     };
 
     return (
-        <aside className={styles.sidebar}>
-            <div className={styles.description}>
-                <LayoutGrid size={18} />
-                <span>Components</span>
+        <aside className={styles.sidebar} style={{ display: 'flex', flexDirection: 'column' }}>
+            <div style={{ flexGrow: 1 }}>
+                <div className={styles.description}>
+                    <LayoutGrid size={18} />
+                    <span>Components</span>
+                </div>
+                <div className={styles.templateList}>
+                    {templates.map((template) => (
+                        <div
+                            key={template.name}
+                            className={styles.templateItem}
+                            onDragStart={(event) => onDragStart(event, template)}
+                            draggable
+                        >
+                            <template.icon size={20} />
+                            <span>{template.name}</span>
+                        </div>
+                    ))}
+                </div>
             </div>
-            <div className={styles.templateList}>
-                {templates.map((template) => (
-                    <div
-                        key={template.name}
+
+            {onOpenSettings && (
+                <div style={{ marginTop: 'auto', paddingTop: '16px', borderTop: '1px solid var(--border-dim)' }}>
+                    <button
+                        onClick={onOpenSettings}
                         className={styles.templateItem}
-                        onDragStart={(event) => onDragStart(event, template)}
-                        draggable
+                        style={{ width: '100%', border: 'none', background: 'transparent', color: 'var(--text-secondary)' }}
                     >
-                        <template.icon size={20} />
-                        <span>{template.name}</span>
-                    </div>
-                ))}
-            </div>
+                        <Settings size={20} />
+                        <span>Settings</span>
+                    </button>
+                </div>
+            )}
         </aside>
     );
 }
