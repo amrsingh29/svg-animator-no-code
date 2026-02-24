@@ -1,9 +1,8 @@
 import { NextResponse } from 'next/server';
 import { GoogleGenAI } from '@google/genai';
-
 export async function POST(req: Request) {
     try {
-        const { svg, svgBefore, svgAfter, prompt, isMorphMode } = await req.json();
+        const { svg, svgBefore, svgAfter, prompt, isMorphMode, apiKey } = await req.json();
 
         if (isMorphMode) {
             if (!svgBefore || !svgAfter || !prompt) {
@@ -15,11 +14,13 @@ export async function POST(req: Request) {
             }
         }
 
-        if (!process.env.GEMINI_API_KEY) {
-            return NextResponse.json({ error: 'Missing GEMINI_API_KEY environment variable. Have you set it in .env.local?' }, { status: 500 });
+        const activeApiKey = apiKey || process.env.GEMINI_API_KEY;
+
+        if (!activeApiKey) {
+            return NextResponse.json({ error: 'Missing GEMINI_API_KEY. Please set it in Settings.' }, { status: 401 });
         }
 
-        const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+        const ai = new GoogleGenAI({ apiKey: activeApiKey });
 
         const systemInstruction = `You are an expert SVG animator and front-end developer. 
 Your task is to take the provided SVG content and a text prompt, and return ONLY a valid, animated SVG string that satisfies the prompt. 

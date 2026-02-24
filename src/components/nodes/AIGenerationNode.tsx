@@ -35,6 +35,13 @@ export default function AIGenerationNode({ id, data }: any) {
         // 3. Call API
         try {
             const isMorphMode = svgNode.data.isMorphMode || false;
+            const apiKey = localStorage.getItem('gemini_api_key');
+
+            if (!apiKey) {
+                alert("Please set your Gemini API Key in Settings first.");
+                updateNodeData(id, { isGenerating: false });
+                return;
+            }
 
             const payload = {
                 prompt: promptNode.data.prompt,
@@ -42,6 +49,7 @@ export default function AIGenerationNode({ id, data }: any) {
                 svg: !isMorphMode ? svgNode.data.svg : undefined,
                 svgBefore: isMorphMode ? svgNode.data.svgBefore : undefined,
                 svgAfter: isMorphMode ? svgNode.data.svgAfter : undefined,
+                apiKey
             };
 
             const response = await fetch('/api/animate', {

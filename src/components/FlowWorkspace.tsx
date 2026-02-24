@@ -25,6 +25,7 @@ import AIGenerationNode from "./nodes/AIGenerationNode";
 import ResultNode from "./nodes/ResultNode";
 import Sidebar from "./Sidebar";
 import ContextMenu, { MenuContextType } from "./ContextMenu";
+import SettingsModal from "./SettingsModal";
 
 const nodeTypes = {
     svgSource: SVGSourceNode,
@@ -54,6 +55,7 @@ function Flow() {
     const [nodes, setNodes] = useState<Node[]>(initialNodes);
     const [edges, setEdges] = useState<Edge[]>(initialEdges);
     const [menu, setMenu] = useState<MenuContextType | null>(null);
+    const [isSettingsOpen, setIsSettingsOpen] = useState(false);
     const { screenToFlowPosition } = useReactFlow();
 
     const onNodesChange = useCallback(
@@ -139,7 +141,7 @@ function Flow() {
 
     return (
         <div style={{ display: 'flex', width: "100vw", height: "100vh" }} onClick={onPaneClick}>
-            <Sidebar />
+            <Sidebar onOpenSettings={() => setIsSettingsOpen(true)} />
             <div style={{ flexGrow: 1 }} ref={reactFlowWrapper}>
                 <ReactFlow
                     nodes={nodes}
@@ -158,6 +160,7 @@ function Flow() {
                 </ReactFlow>
                 {menu && <ContextMenu context={menu} onClose={() => setMenu(null)} getNodeId={getId} />}
             </div>
+            <SettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
         </div>
     );
 }
