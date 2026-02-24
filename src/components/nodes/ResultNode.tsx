@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Handle, Position } from '@xyflow/react';
 import styles from './nodes.module.css';
-import { PlayCircle, Download, Clipboard, Play, Pause, FileCode } from 'lucide-react';
+import { PlayCircle, Download, Clipboard, Play, Pause, FileCode, Sun, Moon } from 'lucide-react';
 
-export default function ResultNode({ data }: any) {
+export default function ResultNode({ id, data }: any) {
     const svgContent = data.svg || '';
     const [isPaused, setIsPaused] = useState(false);
+    const [previewTheme, setPreviewTheme] = useState<'dark' | 'light'>('dark');
     const containerRef = useRef<HTMLDivElement>(null);
 
     // Toggle animation state
@@ -76,6 +77,13 @@ export const AnimatedIcon = () => (
                 <div className={styles.buttonRow} style={{ border: 'none', padding: 0, margin: 0 }}>
                     <button
                         className={styles.iconButton}
+                        onClick={() => setPreviewTheme(previewTheme === 'dark' ? 'light' : 'dark')}
+                        title={`Switch to ${previewTheme === 'dark' ? 'Light' : 'Dark'} mode`}
+                    >
+                        {previewTheme === 'dark' ? <Sun size={14} /> : <Moon size={14} />}
+                    </button>
+                    <button
+                        className={styles.iconButton}
                         onClick={() => setIsPaused(!isPaused)}
                         title={isPaused ? "Play" : "Pause"}
                     >
@@ -87,7 +95,12 @@ export const AnimatedIcon = () => (
             <div
                 ref={containerRef}
                 className={styles.previewBox}
-                style={{ minHeight: '220px', position: 'relative' }}
+                style={{
+                    minHeight: '220px',
+                    position: 'relative',
+                    backgroundColor: previewTheme === 'dark' ? 'var(--bg-main)' : '#ffffff',
+                    transition: 'background-color 0.3s'
+                }}
                 dangerouslySetInnerHTML={{ __html: svgContent || '<span style="color:var(--text-muted)">Waiting for output...</span>' }}
             />
 

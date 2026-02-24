@@ -3,10 +3,16 @@ import { GoogleGenAI } from '@google/genai';
 
 export async function POST(req: Request) {
     try {
-        const { svg, prompt } = await req.json();
+        const { svg, svgBefore, svgAfter, prompt, isMorphMode } = await req.json();
 
-        if (!svg || !prompt) {
-            return NextResponse.json({ error: 'Missing svg or prompt' }, { status: 400 });
+        if (isMorphMode) {
+            if (!svgBefore || !svgAfter || !prompt) {
+                return NextResponse.json({ error: 'Missing svgBefore, svgAfter, or prompt for morph mode' }, { status: 400 });
+            }
+        } else {
+            if (!svg || !prompt) {
+                return NextResponse.json({ error: 'Missing svg or prompt' }, { status: 400 });
+            }
         }
 
         if (!process.env.GEMINI_API_KEY) {
@@ -16,15 +22,33 @@ export async function POST(req: Request) {
         const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
         const systemInstruction = `You are an expert SVG animator and front-end developer. 
-Your task is to take an input SVG and a text prompt, and return ONLY a valid, animated SVG string that satisfies the prompt. 
+Your task is to take the provided SVG content and a text prompt, and return ONLY a valid, animated SVG string that satisfies the prompt. 
 You can use CSS animations (<style> tags inside the SVG) or SMIL animations (<animate>, <animateTransform>, etc.).
 Preserve the original aesthetics, paths, and viewbox as much as possible, just add the requested animations.
 Do not wrap your response in markdown code blocks. Return ONLY the raw <svg>...</svg> string.`;
 
+        let promptText = '';
+        if (isMorphMode) {
+            promptText = `You are in MORPH MODE. You have been provided with two SVGs: a BEFORE state and an AFTER state.
+Your goal is to create a SINGLE animated SVG that seamlessly morphs and transitions from the 'Before' state into the 'After' state, following the user's animation prompt.
+You must interpolate paths, colors, and transforms.
+
+BEFORE SVG:
+${svgBefore}
+
+AFTER SVG:
+${svgAfter}
+
+Animation Prompt/Instructions:
+${prompt}`;
+        } else {
+            promptText = `Original SVG:\n${svg}\n\nAnimation Prompt:\n${prompt}`;
+        }
+
         const response = await ai.models.generateContent({
             model: 'gemini-2.5-pro',
             contents: [
-                { role: 'user', parts: [{ text: `Original SVG:\n${svg}\n\nAnimation Prompt:\n${prompt}` }] }
+                { role: 'user', parts: [{ text: promptText }] }
             ],
             config: {
                 systemInstruction: systemInstruction,
