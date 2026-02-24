@@ -1,4 +1,6 @@
 import React from 'react';
+import { useSession, signIn, signOut } from "next-auth/react";
+import Link from 'next/link';
 import styles from './sidebar.module.css';
 import {
     LayoutGrid,
@@ -10,7 +12,11 @@ import {
     MessageSquare,
     Sparkles,
     PlayCircle,
-    Settings
+    Settings,
+    LogIn,
+    LogOut,
+    User,
+    Image // Import Image icon for Gallery
 } from 'lucide-react';
 
 const templates = [
@@ -25,6 +31,8 @@ const templates = [
 ];
 
 export default function Sidebar({ onOpenSettings }: { onOpenSettings?: () => void }) {
+    const { data: session } = useSession();
+
     const onDragStart = (event: React.DragEvent, template: typeof templates[0]) => {
         event.dataTransfer.setData('application/reactflow', JSON.stringify({
             type: template.type,
@@ -55,8 +63,45 @@ export default function Sidebar({ onOpenSettings }: { onOpenSettings?: () => voi
                 </div>
             </div>
 
-            {onOpenSettings && (
-                <div style={{ marginTop: 'auto', paddingTop: '16px', borderTop: '1px solid var(--border-dim)' }}>
+            <div style={{ marginTop: 'auto', paddingTop: '16px', borderTop: '1px solid var(--border-dim)' }}>
+                {session ? (
+                    <>
+                        <div style={{ padding: '8px 12px', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                            {session.user?.image ? (
+                                <img src={session.user.image} alt="Profile" style={{ width: 24, height: 24, borderRadius: '50%' }} />
+                            ) : (
+                                <User size={20} />
+                            )}
+                            <div style={{ flexGrow: 1, overflow: 'hidden' }}>
+                                <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-primary)', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
+                                    {session.user?.name}
+                                </div>
+                            </div>
+                            <button
+                                onClick={() => signOut()}
+                                title="Sign Out"
+                                style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', padding: 0 }}
+                            >
+                                <LogOut size={16} />
+                            </button>
+                        </div>
+                        <Link href="/dashboard" className={styles.templateItem} style={{ textDecoration: 'none', marginBottom: '8px', justifyContent: 'center' }}>
+                            <Image size={20} />
+                            <span>My Animations</span>
+                        </Link>
+                    </>
+                ) : (
+                    <button
+                        onClick={() => signIn("google")}
+                        className={styles.templateItem}
+                        style={{ width: '100%', border: 'none', background: 'transparent', color: 'var(--text-primary)', justifyContent: 'center', marginBottom: '8px' }}
+                    >
+                        <LogIn size={20} />
+                        <span>Sign In</span>
+                    </button>
+                )}
+
+                {onOpenSettings && (
                     <button
                         onClick={onOpenSettings}
                         className={styles.templateItem}
@@ -65,8 +110,8 @@ export default function Sidebar({ onOpenSettings }: { onOpenSettings?: () => voi
                         <Settings size={20} />
                         <span>Settings</span>
                     </button>
-                </div>
-            )}
+                )}
+            </div>
         </aside>
     );
 }
