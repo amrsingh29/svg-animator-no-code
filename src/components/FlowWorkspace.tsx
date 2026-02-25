@@ -75,7 +75,13 @@ function Flow() {
     const router = useRouter();
     const projectId = searchParams.get('project');
 
+    // Use local state to track the ID immediately after saving to prevent race conditions with router.push
+    const [activeProjectId, setActiveProjectId] = useState<string | null>(projectId);
+
     useEffect(() => {
+        if (projectId && projectId !== activeProjectId) {
+            setActiveProjectId(projectId);
+        }
         if (projectId) {
             fetch(`/api/gallery/load?id=${projectId}`)
                 .then(res => res.json())
@@ -91,6 +97,12 @@ function Flow() {
                     }
                 })
                 .catch(err => console.error("Failed to load project", err));
+        } else if (projectId === null) {
+            // Reset to a blank canvas when clicking "New Project"
+            setNodes(initialNodes);
+            setEdges(initialEdges);
+            setProjectTitle("");
+            setActiveProjectId(null);
         }
     }, [projectId]);
 
@@ -123,7 +135,7 @@ function Flow() {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    id: projectId || undefined,
+                    id: activeProjectId || undefined,
                     title: projectName,
                     nodes,
                     edges,
@@ -134,6 +146,7 @@ function Flow() {
             if (data.success) {
                 alert("Project saved successfully!");
                 setProjectTitle(projectName);
+                setActiveProjectId(data.animation.id); // Instantly update active ID to prevent duplicates
                 if (!projectId) {
                     router.push(`/?project=${data.animation.id}`);
                 }
@@ -290,7 +303,7 @@ function Flow() {
                         onMouseOver={(e) => e.currentTarget.style.borderColor = 'var(--accent-blue)'}
                         onMouseOut={(e) => e.currentTarget.style.borderColor = 'var(--border-dim)'}
                     >
-                        {isSaving ? 'Saving...' : (projectId ? 'Update Project' : 'Save Project')}
+                        {isSaving ? 'Saving...' : (activeProjectId ? 'Update Project' : 'Save Project')}
                     </button>
                 </div>
 

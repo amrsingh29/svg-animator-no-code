@@ -16,7 +16,8 @@ import {
     Search,
     ImageIcon,
     Layers,
-    Folder
+    Folder,
+    FilePlus
 } from 'lucide-react';
 
 const templates = [
@@ -68,6 +69,10 @@ export default function Sidebar({ onOpenSettings }: { onOpenSettings?: () => voi
                             <span>Library</span>
                         </div>
                         <div className={styles.templateList}>
+                            <Link href="/" className={styles.templateItem} style={{ textDecoration: 'none' }}>
+                                <FilePlus size={20} />
+                                <span>New Project</span>
+                            </Link>
                             <Link href="/projects" className={styles.templateItem} style={{ textDecoration: 'none' }}>
                                 <Folder size={20} />
                                 <span>My Projects</span>
