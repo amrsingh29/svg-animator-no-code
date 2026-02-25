@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useSession, signIn, signOut } from "next-auth/react";
 import Link from 'next/link';
 import styles from './sidebar.module.css';
@@ -17,7 +17,9 @@ import {
     ImageIcon,
     Layers,
     Folder,
-    FilePlus
+    FilePlus,
+    ChevronLeft,
+    ChevronRight
 } from 'lucide-react';
 
 const templates = [
@@ -32,6 +34,7 @@ const templates = [
 
 export default function Sidebar({ onOpenSettings }: { onOpenSettings?: () => void }) {
     const { data: session } = useSession();
+    const [isCollapsed, setIsCollapsed] = useState(false);
 
     const onDragStart = (event: React.DragEvent, template: typeof templates[0]) => {
         event.dataTransfer.setData('application/reactflow', JSON.stringify({
@@ -42,11 +45,20 @@ export default function Sidebar({ onOpenSettings }: { onOpenSettings?: () => voi
     };
 
     return (
-        <aside className={styles.sidebar} style={{ display: 'flex', flexDirection: 'column' }}>
+        <aside className={`${styles.sidebar} ${isCollapsed ? styles.collapsed : ''}`}>
             <div style={{ flexGrow: 1 }}>
                 <div className={styles.description}>
-                    <LayoutGrid size={18} />
-                    <span>Components</span>
+                    <div className={styles.descriptionInner} style={{ display: isCollapsed ? 'none' : 'flex' }}>
+                        <LayoutGrid size={18} />
+                        <span>Components</span>
+                    </div>
+                    <button
+                        className={styles.toggleButton}
+                        onClick={() => setIsCollapsed(!isCollapsed)}
+                        title={isCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
+                    >
+                        {isCollapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
+                    </button>
                 </div>
                 <div className={styles.templateList}>
                     {templates.map((template) => (
@@ -65,8 +77,10 @@ export default function Sidebar({ onOpenSettings }: { onOpenSettings?: () => voi
                 {session && (
                     <>
                         <div className={styles.description} style={{ marginTop: '24px' }}>
-                            <Image size={18} />
-                            <span>Library</span>
+                            <div className={styles.descriptionInner} style={{ display: isCollapsed ? 'none' : 'flex' }}>
+                                <Image size={18} />
+                                <span>Library</span>
+                            </div>
                         </div>
                         <div className={styles.templateList}>
                             <Link href="/" className={styles.templateItem} style={{ textDecoration: 'none' }}>
@@ -89,18 +103,19 @@ export default function Sidebar({ onOpenSettings }: { onOpenSettings?: () => voi
             <div style={{ marginTop: 'auto', paddingTop: '16px', borderTop: '1px solid var(--border-dim)' }}>
                 {session ? (
                     <>
-                        <div style={{ padding: '8px 12px', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <div style={{ padding: '8px 12px', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '12px', justifyContent: isCollapsed ? 'center' : 'flex-start' }}>
                             {session.user?.image ? (
                                 <img src={session.user.image} alt="Profile" style={{ width: 24, height: 24, borderRadius: '50%' }} />
                             ) : (
                                 <User size={20} />
                             )}
-                            <div style={{ flexGrow: 1, overflow: 'hidden' }}>
+                            <div className={styles.profileInfo} style={{ flexGrow: 1, overflow: 'hidden' }}>
                                 <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-primary)', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
                                     {session.user?.name}
                                 </div>
                             </div>
                             <button
+                                className={isCollapsed ? styles.profileInfo : ''}
                                 onClick={() => signOut()}
                                 title="Sign Out"
                                 style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', padding: 0 }}

@@ -7,17 +7,38 @@
     padding: 20px 12px;
     gap: 20px;
     z-index: 10;
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), padding 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+}
+
+.sidebar.collapsed {
+    width: 68px;
+    padding: 20px 8px;
 }
 
 .description {
     display: flex;
     align-items: center;
-    gap: 8px;
+    justify-content: space-between;
     color: var(--text-secondary);
     font-size: 14px;
     font-weight: 500;
     padding-bottom: 12px;
     border-bottom: 1px solid var(--border-dim);
+}
+
+.descriptionInner {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-grow: 1;
+    overflow: hidden;
+}
+
+.sidebar.collapsed .descriptionInner span,
+.sidebar.collapsed .templateItem span,
+.sidebar.collapsed .profileInfo {
+    display: none;
 }
 
 .templateList {
@@ -38,6 +59,35 @@
     color: var(--text-primary);
     font-size: 13px;
     transition: all 0.2s;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.sidebar.collapsed .templateItem {
+    justify-content: center;
+    padding: 10px 0;
+}
+
+.toggleButton {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
+    border-radius: 4px;
+    transition: background 0.2s, color 0.2s;
+}
+
+.toggleButton:hover {
+    background: var(--border-dim);
+    color: var(--text-primary);
+}
+
+.sidebar.collapsed .toggleButton {
+    margin: 0 auto;
 }
 
 .templateItem:hover {
