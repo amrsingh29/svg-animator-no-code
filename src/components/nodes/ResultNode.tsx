@@ -1,13 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Handle, Position } from '@xyflow/react';
 import styles from './nodes.module.css';
-import { PlayCircle, Download, Clipboard, Play, Pause, FileCode, Sun, Moon } from 'lucide-react';
+import { PlayCircle, Download, Clipboard, Play, Pause, FileCode, Sun, Moon, Save } from 'lucide-react';
+import { useSession } from "next-auth/react";
 
 export default function ResultNode({ id, data }: any) {
     const svgContent = data.svg || '';
     const [isPaused, setIsPaused] = useState(false);
     const [previewTheme, setPreviewTheme] = useState<'dark' | 'light'>('dark');
+    const [isSaving, setIsSaving] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
+    const { data: session } = useSession();
 
     // Toggle animation state
     useEffect(() => {
@@ -66,6 +69,41 @@ export const AnimatedIcon = () => (
         alert('React component copied to clipboard!');
     };
 
+    const handleSaveToGallery = async () => {
+        if (!session) {
+            alert("Please Sign In via the sidebar to save animations to your gallery.");
+            return;
+        }
+
+        setIsSaving(true);
+        try {
+            const payload = {
+                svgResult: svgContent,
+                prompt: data.prompt || "Generated Animation",
+                // Provide defaults if user hasn't explicitly named them or if they aren't available in this node's direct data payload yet
+                title: "My Animation " + new Date().toLocaleTimeString(),
+            };
+
+            const response = await fetch('/api/gallery/save', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
+            });
+
+            if (response.ok) {
+                alert("Successfully saved to your gallery!");
+            } else {
+                const resData = await response.json();
+                alert(`Error: ${resData.error}`);
+            }
+        } catch (error) {
+            console.error(error);
+            alert("Failed to save animation.");
+        } finally {
+            setIsSaving(false);
+        }
+    };
+
     return (
         <div className={styles.nodeWrapper} style={{ minWidth: '320px' }}>
             <Handle type="target" position={Position.Left} className={styles.handleLeft} />
@@ -114,6 +152,15 @@ export const AnimatedIcon = () => (
                     </button>
                     <button className={styles.actionButton} onClick={handleCopyReact} title="Copy as React">
                         <FileCode size={14} />
+                    </button>
+                    <button
+                        className={styles.actionButton}
+                        onClick={handleSaveToGallery}
+                        disabled={isSaving}
+                        title={isSaving ? "Saving..." : "Save to Gallery"}
+                        style={{ opacity: isSaving ? 0.5 : 1 }}
+                    >
+                        <Save size={14} />
                     </button>
                 </div>
             )}
