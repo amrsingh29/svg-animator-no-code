@@ -1,4 +1,4 @@
-import NextAuth, { DefaultSession } from "next-auth";
+import NextAuth, { DefaultSession, NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { db } from "@/lib/db";
@@ -11,7 +11,7 @@ declare module "next-auth" {
     }
 }
 
-const handler = NextAuth({
+export const authOptions: NextAuthOptions = {
     adapter: PrismaAdapter(db),
     providers: [
         GoogleProvider({
@@ -30,6 +30,8 @@ const handler = NextAuth({
             return session;
         },
     },
-});
+};
+
+const handler = NextAuth(authOptions);
 
 export { handler as GET, handler as POST };

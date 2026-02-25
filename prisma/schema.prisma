@@ -61,8 +61,10 @@ model SavedSVG {
   title     String
   svgBefore String?  @db.Text
   svgAfter  String?  @db.Text
-  svgResult String   @db.Text
+  svgResult String?  @db.Text
   prompt    String   @db.Text
+  nodes     String?  @db.Text // JSON string of React Flow nodes
+  edges     String?  @db.Text // JSON string of React Flow edges
   createdAt DateTime @default(now())
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
