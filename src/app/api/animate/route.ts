@@ -59,12 +59,14 @@ Do NOT add CSS or SMIL animations. Do not output anything except the <svg>...</s
 Your task is to take the provided text prompt and return ONLY a valid, beautiful, well-structured structural SVG string representing that prompt.
 Ensure the viewBox is reasonable (e.g., 0 0 100 100 or 0 0 512 512). Use clean paths, accessible colors, and modern aesthetic styles. 
 Do NOT add CSS or SMIL animations unless explicitly requested in the prompt.
+CRITICAL: If you do add CSS <style> tags, you MUST prefix ALL CSS selectors with a unique ID (e.g. #generated-svg) to prevent CSS leaking to the rest of the web page. You MUST also add this exact same ID to the root <svg> tag.
 Do not wrap your response in markdown code blocks. Return ONLY the raw <svg>...</svg> string.`;
             contentParts = [{ text: `Prompt:\n${prompt}` }];
         } else {
             systemInstruction = `You are an expert SVG animator and front-end developer. 
 Your task is to take the provided SVG content and a text prompt, and return ONLY a valid, animated SVG string that satisfies the prompt. 
 You can use CSS animations (<style> tags inside the SVG) or SMIL animations (<animate>, <animateTransform>, etc.).
+CRITICAL: If you use CSS <style> tags, you MUST prefix ALL CSS selectors with a unique ID (e.g. #animated-svg) to prevent CSS leaking to the rest of the web page. You MUST also add this exact same ID to the root <svg> tag. For example: '#animated-svg path { ... }'. NEVER use generic selectors like 'path' or 'circle' without the ID prefix.
 Preserve the original aesthetics, paths, and viewbox as much as possible, just add the requested animations.
 Do not wrap your response in markdown code blocks. Return ONLY the raw <svg>...</svg> string.`;
 
