@@ -1,36 +1,31 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# SVG Animator No-Code 🎨✨
 
-## Getting Started
+**SVG Animator No-Code** is a powerful visual node-based editor designed to simplify the creation, animation, and extraction of SVGs directly from the browser. It combines a seamless drag-and-drop workspace with AI-powered code generation to bring static vectors to life instantly.
 
-First, run the development server:
+## 🌟 Core Capabilities
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+### 🧠 AI-Powered Generation
+* **Text-to-Animation**: Just describe how you want an SVG to animate (e.g., "make the logo pulse and glow continuously"), and the AI generation node writes the underlying CSS keyframes and applies them to your SVG.
+* **Component Extraction**: Transforms animated SVGs into clean, usable inline React components that you can copy and paste directly into your codebase.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 🔀 Node-Based Visual Editor
+* **Unlimited Workspaces**: Utilize an infinite canvas built on top of `React Flow` to structurally wire your ideas together.
+* **Drag-and-Drop Nodes**: Connect an **SVG Source** to a **Text Prompt**, route it through the **AI Generator**, and visualize the result instantly on the **Render Node**.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 💼 Project and Asset Management
+* **My Projects**: Save the exact state of your canvas (nodes, edges, prompts, and SVGs) to the database and resume editing them seamlessly at any time.
+* **My Animations**: A curated gallery of exported, finalized SVG renders stored securely in your user account.
+* **Duplicate Prevention**: Intelligently updates existing canvases upon save without polluting your dashboard.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 🔐 Secure & Persistent
+* **Authentication**: Seamless Google OAuth integration via `NextAuth.js`.
+* **Database**: Supported by Prisma and PostgreSQL for reliable and secure workspace persistence.
 
-## Learn More
+## 🚀 Future Roadmap
+We are actively tracking future capabilities via GitHub Issues, including Granular Transformation Nodes, Interactive Triggers (Hover/Click), Sequence Timely delays, and Lottie/MP4 export options.
 
-To learn more about Next.js, take a look at the following resources:
+## 🛠️ Getting Started
+To run this application locally, please see the [Local Deployment Guide](docs/local-deployment-guide.md) inside the `docs` folder.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+Built with Next.js, React Flow, Prisma, and ❤️.
