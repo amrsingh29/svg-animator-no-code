@@ -25,8 +25,8 @@ export default async function DashboardPage() {
             <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '40px' }}>
                     <div>
-                        <h1 style={{ fontSize: '32px', fontWeight: 700, margin: '0 0 8px 0', letterSpacing: '-0.02em' }}>My Animations</h1>
-                        <p style={{ color: '#a1a1aa', margin: 0 }}>View and manage your exported SVG generations.</p>
+                        <h1 style={{ fontSize: '32px', fontWeight: 700, margin: '0 0 8px 0', letterSpacing: '-0.02em' }}>My Projects</h1>
+                        <p style={{ color: '#a1a1aa', margin: 0 }}>View and manage your saved editable canvases.</p>
                     </div>
                     <Link href="/" style={{
                         display: 'flex', alignItems: 'center', gap: '8px',
@@ -38,17 +38,64 @@ export default async function DashboardPage() {
                     </Link>
                 </div>
 
-                {animations.length === 0 && (
+                {projects.length === 0 && (
                     <div style={{ textAlign: 'center', padding: '100px 20px', backgroundColor: '#18181b', borderRadius: '16px', border: '1px solid #27272a' }}>
                         <Code2 size={48} style={{ color: '#52525b', margin: '0 auto 16px auto' }} />
-                        <h3 style={{ fontSize: '20px', margin: '0 0 8px 0' }}>No animations yet</h3>
-                        <p style={{ color: '#a1a1aa', margin: 0 }}>Head back to the editor and generate your first SVG!</p>
+                        <h3 style={{ fontSize: '20px', margin: '0 0 8px 0' }}>No projects yet</h3>
+                        <p style={{ color: '#a1a1aa', margin: 0 }}>Head back to the editor and save your first project!</p>
                     </div>
                 )}
 
-                {animations.length > 0 && (
+                {projects.length > 0 && (
+                    <div style={{ marginBottom: '60px' }}>
+                        <h2 style={{ fontSize: '24px', fontWeight: 600, marginBottom: '24px', color: '#f4f4f5' }}>My Projects</h2>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '24px' }}>
+                            {projects.map((anim: any) => (
+                                <Link href={`/?project=${anim.id}`} key={anim.id} style={{ textDecoration: 'none', color: 'inherit' }}>
+                                    <div style={{
+                                        backgroundColor: '#18181b',
+                                        border: '1px solid #27272a',
+                                        borderRadius: '12px',
+                                        overflow: 'hidden',
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        transition: 'transform 0.2s, borderColor 0.2s',
+                                        cursor: 'pointer'
+                                    }}
+                                    >
+                                        <div style={{
+                                            height: '220px',
+                                            backgroundColor: '#27272a',
+                                            padding: '16px',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            position: 'relative'
+                                        }}
+                                            dangerouslySetInnerHTML={{ __html: anim.svgResult || '<div style="color:#71717a">WIP Canvas</div>' }}
+                                        />
+                                        <div style={{ padding: '16px', borderTop: '1px solid #27272a' }}>
+                                            <h3 style={{ margin: '0 0 8px 0', fontSize: '16px', fontWeight: 600 }}>{anim.title}</h3>
+                                            <p style={{ margin: '0 0 16px 0', fontSize: '13px', color: '#a1a1aa', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                                                <span style={{ color: '#f4f4f5', fontWeight: 500 }}>Prompt:</span> {anim.prompt || 'None'}
+                                            </p>
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                <span style={{ fontSize: '12px', color: '#71717a' }}>
+                                                    {new Date(anim.createdAt).toLocaleDateString()}
+                                                </span>
+                                                <span style={{ fontSize: '12px', color: '#3b82f6', fontWeight: 500 }}>Editable Canvas</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </Link>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
+                {projects.length > 0 && (
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '24px' }}>
-                        {animations.map((anim: any) => (
+                        {projects.map((anim: any) => (
                             <Link href={`/?project=${anim.id}`} key={anim.id} style={{ textDecoration: 'none', color: 'inherit' }}>
                                 <div style={{
                                     backgroundColor: '#18181b',
@@ -70,7 +117,7 @@ export default async function DashboardPage() {
                                         justifyContent: 'center',
                                         position: 'relative'
                                     }}
-                                        dangerouslySetInnerHTML={{ __html: anim.svgResult || '<div style="color:#71717a">No Render</div>' }}
+                                        dangerouslySetInnerHTML={{ __html: anim.svgResult || '<div style="color:#71717a">WIP Canvas</div>' }}
                                     />
                                     <div style={{ padding: '16px', borderTop: '1px solid #27272a' }}>
                                         <h3 style={{ margin: '0 0 8px 0', fontSize: '16px', fontWeight: 600 }}>{anim.title}</h3>
@@ -82,7 +129,7 @@ export default async function DashboardPage() {
                                                 {new Date(anim.createdAt).toLocaleDateString()}
                                             </span>
                                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                                <span style={{ fontSize: '12px', color: '#10b981', fontWeight: 500 }}>Exported SVG</span>
+                                                <span style={{ fontSize: '12px', color: '#3b82f6', fontWeight: 500 }}>Editable Canvas</span>
                                                 <div>
                                                     <DeleteButton id={anim.id} />
                                                 </div>

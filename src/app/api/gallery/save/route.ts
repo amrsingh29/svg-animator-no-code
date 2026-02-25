@@ -18,22 +18,49 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: 'User not found in database.' }, { status: 404 });
         }
 
-        const { svgBefore, svgAfter, svgResult, prompt, title } = await req.json();
+        const { id, svgBefore, svgAfter, svgResult, prompt, title, nodes, edges } = await req.json();
 
-        if (!svgResult || !prompt) {
-            return NextResponse.json({ error: 'Missing required generated SVG or prompt.' }, { status: 400 });
+        if (!nodes && !svgResult) {
+            return NextResponse.json({ error: 'Cannot save an empty project.' }, { status: 400 });
         }
 
-        const savedSVG = await db.savedSVG.create({
-            data: {
-                userId: user.id,
-                title: title || "Untitled Animation",
-                svgBefore: svgBefore || null,
-                svgAfter: svgAfter || null,
-                svgResult,
-                prompt,
+        let savedSVG;
+
+        if (id) {
+            const existing = await db.savedSVG.findUnique({ where: { id } });
+            if (!existing) {
+                return NextResponse.json({ error: 'Project not found.' }, { status: 404 });
             }
-        });
+            if (existing.userId !== user.id) {
+                return NextResponse.json({ error: 'Unauthorized to update this project.' }, { status: 403 });
+            }
+
+            savedSVG = await db.savedSVG.update({
+                where: { id },
+                data: {
+                    title: title || existing.title,
+                    svgBefore: svgBefore || existing.svgBefore,
+                    svgAfter: svgAfter || existing.svgAfter,
+                    svgResult: svgResult || existing.svgResult,
+                    prompt: prompt || existing.prompt,
+                    nodes: nodes ? JSON.stringify(nodes) : existing.nodes,
+                    edges: edges ? JSON.stringify(edges) : existing.edges,
+                }
+            });
+        } else {
+            savedSVG = await db.savedSVG.create({
+                data: {
+                    userId: user.id,
+                    title: title || "Untitled Project",
+                    svgBefore: svgBefore || null,
+                    svgAfter: svgAfter || null,
+                    svgResult: svgResult || null,
+                    prompt: prompt || "",
+                    nodes: nodes ? JSON.stringify(nodes) : null,
+                    edges: edges ? JSON.stringify(edges) : null,
+                }
+            });
+        }
 
         return NextResponse.json({ success: true, animation: savedSVG });
 
