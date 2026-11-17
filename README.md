@@ -8,6 +8,10 @@ A visual node editor that animates SVGs in the browser. You drag nodes onto a ca
 
 Everything runs on a single canvas with four kinds of node: a **source** that provides an SVG, a **Text Prompt** that describes the motion, the **AI Generation** node that turns one into the other, and a **Rendered Result** that plays the output.
 
+
+https://github.com/user-attachments/assets/f61d877a-e34b-47f8-99bb-eadd1e659a7a
+
+
 Sources are interchangeable:
 
 | Node | Gets an SVG from |
