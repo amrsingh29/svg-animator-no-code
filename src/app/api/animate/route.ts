@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { GoogleGenAI } from '@google/genai';
+import { GoogleGenAI, ThinkingLevel } from '@google/genai';
 export async function POST(req: Request) {
     try {
         const { svg, svgBefore, svgAfter, prompt, isMorphMode, apiKey, mode, imageMimeType, imageBase64 } = await req.json();
@@ -91,11 +91,14 @@ ${prompt}`
         }
 
         const response = await ai.models.generateContent({
-            model: 'gemini-2.5-flash',
+            // Override with GEMINI_MODEL in .env (e.g. gemini-3.6-flash) without touching code.
+            model: process.env.GEMINI_MODEL || 'gemini-3.8-flash',
             contents: contentParts,
             config: {
                 systemInstruction: systemInstruction,
-                temperature: 0.1, // Lower temperature for more stable XML
+                // Gemini 3.6+ deprecated temperature/top_p/top_k; determinism now comes from the
+                // system instruction. Thinking level trades latency for path accuracy.
+                thinkingConfig: { thinkingLevel: ThinkingLevel.MEDIUM },
             }
         });
 
